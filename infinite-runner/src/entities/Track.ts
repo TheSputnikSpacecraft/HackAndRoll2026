@@ -1,14 +1,32 @@
 import * as THREE from 'three';
 import { GAME_CONFIG } from '../config/constants';
-import { createTextTexture } from '../utils/TextureGen';
+import { createTextTexture, createAsphaltTexture } from '../utils/TextureGen';
+import { WorldBender } from '../rendering/WorldBender';
 
 export class Track {
     public mesh: THREE.Group;
     private segments: THREE.Mesh[] = [];
-    private speed: number = GAME_CONFIG.PLAYER.SPEED_INITIAL;
+    private sharedMaterial: THREE.MeshStandardMaterial;
 
     constructor() {
         this.mesh = new THREE.Group();
+        // Shared material for performance
+        const asphaltTex = createAsphaltTexture();
+        // Rotate texture to align with road direction?
+        // Plane is Rotated -90 X. 
+        // UVs: U=X, V=Y (which maps to World -Z).
+        // Texture lines are vertical (Y).
+        // So lines will run along Z. Correct.
+        asphaltTex.repeat.set(1, 4); // Repeat along length
+
+        this.sharedMaterial = new THREE.MeshStandardMaterial({
+            map: asphaltTex,
+            roughness: 0.8,
+            metalness: 0.2,
+            color: 0x444444 // Darker Grey
+        });
+        this.sharedMaterial.onBeforeCompile = WorldBender.inject;
+
         this.initializeTrack();
     }
 
@@ -20,23 +38,38 @@ export class Track {
     }
 
     private spawnSegment(zPos: number): void {
-        // ROAD
-        const geometry = new THREE.PlaneGeometry(
-            GAME_CONFIG.WORLD.LANE_WIDTH * 3 + 2, // Width
-            GAME_CONFIG.WORLD.PLATFORM_LENGTH
-        );
-        const material = new THREE.MeshStandardMaterial({
-            color: (Math.floor(zPos / 10) % 2 === 0) ? 0x222222 : 0x2a2a2a, // Asphalt dark
-            roughness: 0.9
-        });
+        // ROAD (Thick 3D Mesh)
+        // Width: Lanes * Width + Side margins
+        const roadWidth = GAME_CONFIG.WORLD.LANE_WIDTH * 3 + 2;
+        const roadLength = GAME_CONFIG.WORLD.PLATFORM_LENGTH;
+        const roadThickness = 4.0; // Thick base
 
-        const segment = new THREE.Mesh(geometry, material);
-        segment.rotation.x = -Math.PI / 2;
-        segment.position.z = zPos;
+        const geometry = new THREE.BoxGeometry(
+            roadWidth,
+            roadThickness,
+            roadLength
+        );
+
+        const segment = new THREE.Mesh(geometry, this.sharedMaterial);
+        // Position Y so the top surface is at 0
+        // Box origin is center. So Y = -thickness/2
+        segment.position.set(0, -roadThickness / 2, zPos);
         segment.receiveShadow = true;
 
         this.mesh.add(segment);
         this.segments.push(segment);
+
+        // Add Curbs (White strips on edges)
+        const curbGeo = new THREE.BoxGeometry(0.5, 0.2, roadLength);
+        const curbMat = new THREE.MeshStandardMaterial({ color: 0xcccccc });
+
+        const curbL = new THREE.Mesh(curbGeo, curbMat);
+        curbL.position.set(-roadWidth / 2 + 0.25, roadThickness / 2 + 0.1, 0); // Local to segment
+        segment.add(curbL);
+
+        const curbR = new THREE.Mesh(curbGeo, curbMat);
+        curbR.position.set(roadWidth / 2 - 0.25, roadThickness / 2 + 0.1, 0);
+        segment.add(curbR);
 
         // BILLBOARDS (Decor)
         if (Math.random() > 0.6) {

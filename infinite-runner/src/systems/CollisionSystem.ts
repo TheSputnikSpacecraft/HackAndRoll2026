@@ -14,7 +14,7 @@ export class CollisionSystem {
         const playerBox = this.player.getAABB();
 
         for (const obstacle of this.spawner.obstacles) {
-            if (playerBox.intersectsBox(obstacle.aabb)) {
+            if (playerBox.intersectsBox(obstacle.getAABB())) {
                 return true;
             }
         }

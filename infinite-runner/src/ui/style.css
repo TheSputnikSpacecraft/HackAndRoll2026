@@ -1,0 +1,148 @@
+:root {
+    --color-primary: #FFD700;
+    /* Gold */
+    --color-secondary: #2ECC71;
+    /* Emerald */
+    --color-accent: #3498DB;
+    /* Blue */
+    --color-danger: #E74C3C;
+    /* Red */
+    --color-dark: #2C3E50;
+    --font-stack: 'Titan One', cursive;
+    --shadow-pop: 0px 6px 0px rgba(0, 0, 0, 0.2);
+    --shadow-text: 2px 2px 0px rgba(0, 0, 0, 0.5);
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: var(--font-stack);
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+#game-ui {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.hud-score-container {
+    align-self: flex-end;
+    background: linear-gradient(180deg, #4facfe 0%, #00f2fe 100%);
+    padding: 10px 25px;
+    border-radius: 50px;
+    border: 4px solid #ffffff;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+    transform-origin: right top;
+}
+
+.hud-score {
+    font-size: 3rem;
+    color: white;
+    text-shadow: 2px 2px 0px #005f73, -1px -1px 0 #005f73, 1px -1px 0 #005f73, -1px 1px 0 #005f73, 1px 1px 0 #005f73;
+    margin: 0;
+    line-height: 1;
+}
+
+.hud-label {
+    font-size: 1rem;
+    color: #e0faff;
+    text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-align: right;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Game Over Modal */
+.game-over-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(12, 20, 31, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.game-over-card {
+    background: white;
+    padding: 40px;
+    border-radius: 30px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    max-width: 400px;
+    width: 90%;
+    transform: scale(0.8);
+    /* Animation handled by GSAP */
+}
+
+.game-over-title {
+    font-size: 3.5rem;
+    background: linear-gradient(180deg, #FF9966 0%, #FF5E62 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0 0 10px 0;
+    filter: drop-shadow(2px 4px 0px rgba(0, 0, 0, 0.2));
+}
+
+.game-over-score-label {
+    font-size: 1.2rem;
+    color: #7f8c8d;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.game-over-score-value {
+    font-size: 4rem;
+    color: #2C3E50;
+    margin: 10px 0 30px 0;
+    text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
+}
+
+.restart-btn {
+    background: linear-gradient(180deg, #2ECC71 0%, #27AE60 100%);
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.5rem;
+    color: white;
+    font-family: var(--font-stack);
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0px 6px 0px #1E8449, 0px 10px 20px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s, box-shadow 0.1s;
+    text-transform: uppercase;
+}
+
+.restart-btn:active {
+    transform: translateY(6px);
+    box-shadow: 0px 0px 0px #1E8449, 0px 0px 0px rgba(0, 0, 0, 0.2);
+}
+
+.controls-hint {
+    position: absolute;
+    bottom: 30px;
+    width: 100%;
+    text-align: center;
+    color: white;
+    font-size: 1.2rem;
+    opacity: 0.8;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+}

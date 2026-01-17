@@ -1,0 +1,4 @@
+/* Game Container Styles if needed */
+#runner-game-iframe {
+    transition: transform 0.3s ease;
+}

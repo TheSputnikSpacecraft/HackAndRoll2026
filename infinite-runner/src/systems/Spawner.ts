@@ -1,5 +1,4 @@
-import { Obstacle, ObstacleType } from '../entities/Obstacle';
-import { GAME_CONFIG } from '../config/constants';
+import { Obstacle, OBSTACLE_TYPES } from '../entities/Obstacle';
 import * as THREE from 'three';
 
 export class Spawner {
@@ -31,7 +30,7 @@ export class Spawner {
             // Adjust interval based on speed to keep density consistent?
             // Distance = Speed * Time. 
             // If we want Fixed Distance between obstacles: Time = Distance / Speed.
-            const minDistance = 20;
+            const minDistance = 15; // Closer together
             this.spawnInterval = minDistance / speed;
             this.spawnTimer = this.spawnInterval;
         }
@@ -41,11 +40,12 @@ export class Spawner {
         const lane = Math.floor(Math.random() * 3) - 1; // -1, 0, 1
 
         // Random Type
-        const types = [ObstacleType.BOX, ObstacleType.LOW, ObstacleType.TALL];
+        const types = [OBSTACLE_TYPES.BOX, OBSTACLE_TYPES.LOW, OBSTACLE_TYPES.TALL];
         const type = types[Math.floor(Math.random() * types.length)];
 
         // Spawn far ahead
-        const zPos = -100; // Deep in fog
+        // Spawn visible
+        const zPos = -40;
 
         const obstacle = new Obstacle(type, lane, zPos);
         this.scene.add(obstacle.mesh);
