@@ -27,6 +27,15 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         // CHECK FEATURE
         if (getFeature(tabId) !== Feature.HARD_TO_CLOSE) return;
 
+        // Exception: YouTube
+        // If it's YouTube, we do NOT apply the hard-to-close logic.
+        // We ensure it's removed from tracking so it closes normally.
+        if (tab.url && tab.url.includes("youtube.com")) {
+            tabLives.delete(tabId);
+            chrome.action.setBadgeText({ text: "", tabId }).catch(() => { });
+            return;
+        }
+
         let current = tabLives.get(tabId);
 
         if (!current) {
@@ -74,6 +83,12 @@ chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
 
     // Clean up memory
     tabLives.delete(tabId);
+
+    // Exception: YouTube
+    // If exact URL matches or was tracked as YouTube, allow close.
+    if (current && current.url && current.url.includes("youtube.com")) {
+        return;
+    }
 
     if (current && current.lives > 1) {
         // Decrement and Resurrect
