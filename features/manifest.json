@@ -1,0 +1,35 @@
+{
+    "manifest_version": 3,
+    "name": "HackAndRoll 2026 Features",
+    "version": "1.0",
+    "description": "A collection of annoying features for HackAndRoll 2026",
+    "permissions": [
+        "tabs",
+        "storage"
+    ],
+    "background": {
+        "service_worker": "background/index.js",
+        "type": "module"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "content/index.js"
+            ],
+            "run_at": "document_end"
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "modules/hard_to_close/content.js"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ]
+}
