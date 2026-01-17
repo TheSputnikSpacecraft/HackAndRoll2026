@@ -10,7 +10,7 @@
         console.log(`[Content] Assigned Feature: ${feature}`);
 
         if (feature === 'HARD_TO_CLOSE') {
-            const src = chrome.runtime.getURL('modules/hard_to_close/content.js');
+            const src = chrome.runtime.getURL('features/modules/hard_to_close/content.js');
             await import(src);
         }
 

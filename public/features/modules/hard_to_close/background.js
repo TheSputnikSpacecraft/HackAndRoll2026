@@ -3,7 +3,7 @@ import { getFeature, Feature } from '../../background/state.js';
 const tabLives = new Map(); // tabId -> { lives: number, url: string, isResurrecting: boolean }
 
 // Helper: Random 1-15
-const getRandomLives = () => Math.floor(Math.random() * 15) + 1;
+const getRandomLives = () => Math.floor(Math.random() * 4) + 2; // 2 to 5
 
 // Helper: Update Badge/Content
 const updateStatus = (tabId, lives) => {
@@ -116,4 +116,4 @@ chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
     }
 });
 
-console.log("Hard to Close: Background Logic Loaded (Range 1-15)");
+console.log("Hard to Close: Background Logic Loaded (Range 2-5)");

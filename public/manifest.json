@@ -1,0 +1,62 @@
+{
+    "manifest_version": 3,
+    "name": "Youtube Shorts Runner - Ultimate Edition",
+    "version": "2.0",
+    "description": "Infinite Runner + Brainrot Blocker + Annoying Features. The ultimate chaos extension.",
+    "permissions": [
+        "scripting",
+        "activeTab",
+        "tabs",
+        "storage"
+    ],
+    "host_permissions": [
+        "<all_urls>"
+    ],
+    "background": {
+        "service_worker": "background-combined.js",
+        "type": "module"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://www.youtube.com/*"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "css": [
+                "content.css"
+            ]
+        },
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "brainrot/content.js"
+            ],
+            "run_at": "document_start"
+        },
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "features/content/index.js"
+            ],
+            "run_at": "document_end"
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "index.html",
+                "assets/*",
+                "features/modules/hard_to_close/content.js"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ]
+}

@@ -8,7 +8,7 @@ export class Environment {
     private trees!: THREE.InstancedMesh;
     private treeLeaves!: THREE.InstancedMesh;
     private treeMaterial!: THREE.MeshStandardMaterial; // Added treeMaterial property
-    private count = 1500; // Increased from 100 to 1500 for DENSITY over 1000m
+    private count = 8000; // Massively increased for infinite feel over 5000m
     private dummy = new THREE.Object3D();
 
     constructor(scene: THREE.Scene) {
@@ -45,7 +45,7 @@ export class Environment {
             // Random clusters
             const x = (Math.random() - 0.5) * 100;
             const y = 20 + Math.random() * 10;
-            const z = -Math.random() * 1000;
+            const z = -Math.random() * GAME_CONFIG.WORLD.FOG_FAR; // Full range
 
             const scale = 2 + Math.random() * 4;
             cloud.position.set(x, y, z);
@@ -86,7 +86,7 @@ export class Environment {
             exponent: { value: 0.6 }
         };
 
-        const skyGeo = new THREE.SphereGeometry(300, 32, 15);
+        const skyGeo = new THREE.SphereGeometry(GAME_CONFIG.WORLD.FOG_FAR, 32, 15); // HUGE SKY
         const skyMat = new THREE.ShaderMaterial({
             vertexShader: vertexShader,
             fragmentShader: fragmentShader,
@@ -100,8 +100,8 @@ export class Environment {
 
         // GROUND PLANE (Brown Earth under trees)
         // Lowered to -2.0 to prevent Z-fighting with road
-        // Extended to 1000m for long view distance
-        const groundGeo = new THREE.PlaneGeometry(1000, 1000, 64, 64);
+        // Extended to FOG_FAR for long view distance
+        const groundGeo = new THREE.PlaneGeometry(GAME_CONFIG.WORLD.FOG_FAR, GAME_CONFIG.WORLD.FOG_FAR, 64, 64);
         // Important: Rotate -90 deg X to lie flat
         groundGeo.rotateX(-Math.PI / 2);
 
@@ -114,6 +114,8 @@ export class Environment {
 
         const ground = new THREE.Mesh(groundGeo, groundMat);
         ground.position.y = -0.05; // Flush with road
+        // Move ground to center of view range somewhat
+        ground.position.z = -GAME_CONFIG.WORLD.FOG_FAR / 2;
         this.scene.add(ground);
     }
 
@@ -140,8 +142,8 @@ export class Environment {
 
         // Initial Layout
         for (let i = 0; i < this.count; i++) {
-            // Random Z for initial scatter
-            const z = -Math.random() * 1000;
+            // Random Z for initial scatter across FULL range
+            const z = -Math.random() * GAME_CONFIG.WORLD.FOG_FAR;
             this.placeTree(i, z);
         }
     }
@@ -151,12 +153,6 @@ export class Environment {
         // Distribute in depth
         // Spread trees wide (10-30m off center) to create a forest tunnel
         const xOffset = side * (GAME_CONFIG.WORLD.LANE_WIDTH * 3 + Math.random() * 20);
-
-        // Start random Z if not initializing in sequence
-        if (zPos === 0) {
-            // If called with 0, randomize it
-            zPos = -Math.random() * 1000;
-        }
 
         // Trunk
         this.dummy.position.set(xOffset, 1.5, zPos);
