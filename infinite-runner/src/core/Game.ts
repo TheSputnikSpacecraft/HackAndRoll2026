@@ -81,10 +81,13 @@ export class Game {
 
     private handleStateChange = (newState: GameState): void => {
         if (newState === GameState.DEAD) {
-            console.log('GAME OVER');
+            console.log('GAME OVER - Auto-restarting...');
             // Broadcast Death to Chrome Extension
             window.parent.postMessage({ type: 'GAME_OVER' }, '*');
-            this.gameOver.show(this.score);
+            // Brief camera shake effect, then auto-restart
+            setTimeout(() => {
+                this.reset();
+            }, 500); // 500ms delay before auto-restart
         } else if (newState === GameState.RUNNING) {
             this.gameOver.hide();
         }
@@ -128,6 +131,9 @@ export class Game {
         this.track.update(dt, this.speed);
         this.spawner.update(dt, this.speed);
         if (this.environment) this.environment.update(dt, this.speed);
+
+        // Check for bomb collection
+        this.checkBombCollection();
 
         if (this.collisionSystem.check()) {
             this.stateMachine.setState(GameState.DEAD);
@@ -185,4 +191,29 @@ export class Game {
             this.renderer.instance.render(this.scene.instance, this.camera.instance);
         }
     };
+
+    private checkBombCollection(): void {
+        const playerBox = this.player.getAABB();
+
+        for (const bomb of this.spawner.bombs) {
+            if (playerBox.intersectsBox(bomb.getAABB())) {
+                // Collected a bomb!
+                console.log('💣 Bomb Collected!');
+
+                // Send message to skip video 5 seconds
+                window.parent.postMessage({ type: 'BOMB_COLLECTED' }, '*');
+
+                // Remove the bomb
+                this.spawner.removeBomb(bomb);
+
+                // Add bonus points
+                this.score += 100;
+
+                // Visual feedback (small camera shake)
+                this.camera.addShake(0.3);
+
+                break; // Only collect one bomb per frame
+            }
+        }
+    }
 }

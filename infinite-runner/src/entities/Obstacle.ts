@@ -57,12 +57,10 @@ export class Obstacle {
         if (this.type === OBSTACLE_TYPES.LOW) {
             w = 2; h = 1; d = 0.5; yOff = 0.5;
         } else if (this.type === OBSTACLE_TYPES.TALL) {
-            // Sign: Hitbox is the TOP part? 
-            // We want the player to slide UNDER.
-            // If player is standing (h=1.8), they hit.
-            // If sliding (h=0.8), they pass under (y>2).
-            // So hitbox should be from Y=2 to Y=4.
-            w = 3; h = 1.5; d = 0.5; yOff = 3;
+            // Sign: Hitbox is above ground but at player standing height
+            // Standing player (h=1.8) must hit, sliding player (h=0.8) must pass under
+            // Hitbox from Y=1.0 to Y=2.5 - standing player (0-1.8) hits, sliding (0-0.8) passes
+            w = 3; h = 1.5; d = 0.5; yOff = 1.75;
         } else if (this.type === OBSTACLE_TYPES.BOX) {
             w = 2.2; h = 3; d = 6; yOff = 1.5;
         }
